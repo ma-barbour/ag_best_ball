@@ -11,18 +11,18 @@
   <!-- PapaParse for Google Sheet CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   
-  <!-- Chart.js for the line chart -->
+  <!-- Chart.js for the line/bar charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
-  <!-- Chart.js DataLabels Plugin for numbers inside points -->
+  <!-- Chart.js DataLabels Plugin -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
-  <!-- Tom Select for the searchable dropdown -->
+  <!-- Tom Select for the searchable dropdowns -->
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
   
   <style>
-    /* Slight override to make Tom Select match Tailwind styling better */
+    /* Slight override to make Tom Select match Tailwind styling */
     .ts-control { border-radius: 0.5rem; padding: 0.75rem; border-color: #cbd5e1; background-color: #f8fafc; font-weight: 600; }
     .ts-control.focus { border-color: #22c55e; box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2); }
   </style>
@@ -38,12 +38,15 @@
     </div>
 
     <!-- Tab Navigation -->
-    <div class="flex border-b border-slate-200 bg-slate-50">
-      <button id="btn-tab-summary" onclick="switchTab('summary')" class="flex-1 py-3 text-center font-bold text-sm md:text-base border-b-4 border-green-600 text-green-700 bg-white transition-colors">
+    <div class="flex border-b border-slate-200 bg-slate-50 overflow-x-auto">
+      <button id="btn-tab-summary" onclick="switchTab('summary')" class="flex-1 min-w-[120px] py-3 text-center font-bold text-sm md:text-base border-b-4 border-green-600 text-green-700 bg-white transition-colors">
         ADP Summary
       </button>
-      <button id="btn-tab-player" onclick="switchTab('player')" class="flex-1 py-3 text-center font-bold text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+      <button id="btn-tab-player" onclick="switchTab('player')" class="flex-1 min-w-[120px] py-3 text-center font-bold text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
         Player Analysis
+      </button>
+      <button id="btn-tab-manager" onclick="switchTab('manager')" class="flex-1 min-w-[120px] py-3 text-center font-bold text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+        Manager Analysis
       </button>
     </div>
 
@@ -85,18 +88,13 @@
       <!-- VIEW 2: PLAYER ANALYSIS                    -->
       <!-- ========================================== -->
       <div id="view-player" class="hidden p-4 md:p-6">
-        
-        <!-- Player Selector (Searchable) -->
         <div class="mb-6">
           <label for="player-select" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Search & Select Player</label>
           <div class="w-full md:w-1/2">
-            <select id="player-select" placeholder="Type a player's name..." class="w-full">
-              <!-- Options injected by JS -->
-            </select>
+            <select id="player-select" placeholder="Type a player's name..." class="w-full"></select>
           </div>
         </div>
 
-        <!-- Player Profile Card -->
         <div class="flex items-center gap-4 bg-slate-50 border border-slate-200 p-4 rounded-xl mb-8 shadow-sm">
           <img id="profile-logo" src="" alt="Team Logo" class="h-16 w-16 md:h-20 md:w-20 object-contain drop-shadow-sm">
           <div class="flex-1">
@@ -109,7 +107,6 @@
           </div>
         </div>
 
-        <!-- Chart Section -->
         <div class="mb-8">
           <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Draft Position Trend</h3>
           <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm relative h-[300px] md:h-[400px]">
@@ -117,7 +114,6 @@
           </div>
         </div>
 
-        <!-- Team History Table -->
         <div>
           <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Fantasy Team Draft History</h3>
           <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
@@ -135,6 +131,102 @@
             </table>
           </div>
         </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- VIEW 3: MANAGER ANALYSIS                   -->
+      <!-- ========================================== -->
+      <div id="view-manager" class="hidden p-4 md:p-6">
+        
+        <!-- 1. Manager Selector -->
+        <div class="mb-8">
+          <label for="manager-select" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Search & Select Manager</label>
+          <div class="w-full md:w-1/2">
+            <select id="manager-select" placeholder="Type a manager's name..." class="w-full"></select>
+          </div>
+        </div>
+
+        <!-- 2. Leagues Entered Summary -->
+        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl mb-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <h2 id="manager-name" class="text-xl md:text-2xl font-extrabold text-slate-900">Manager Name</h2>
+          <div class="text-sm md:text-base font-bold text-slate-600 uppercase tracking-wide">
+            Total Leagues Entered: <span id="manager-leagues-count" class="text-xl md:text-2xl font-black text-slate-900 ml-2">0</span>
+          </div>
+        </div>
+
+        <!-- 3. First Round Draft Slots Chart -->
+        <div class="mb-10">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">1st Round Draft Slots</h3>
+          <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm relative h-[250px] md:h-[300px]">
+            <canvas id="managerSlotsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- 4. Aggregated Player Table (With Filters) -->
+        <div class="mb-10">
+          <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 mb-4 pb-2 gap-4">
+            <h3 class="text-lg font-bold text-slate-800">Player Selection History (All Leagues)</h3>
+            <div class="flex items-center gap-2">
+              <label for="manager-pos-filter" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Filter POS:</label>
+              <select id="manager-pos-filter" class="p-1.5 border border-slate-300 rounded text-sm font-semibold bg-white outline-none focus:border-green-500">
+                <option value="ALL">All</option>
+                <option value="C">C</option>
+                <option value="LW">LW</option>
+                <option value="RW">RW</option>
+                <option value="D">D</option>
+                <option value="G">G</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm max-h-[400px] overflow-y-auto relative">
+            <table class="w-full text-left border-collapse" id="manager-players-table">
+              <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 shadow-sm z-10">
+                <tr class="text-xs md:text-sm uppercase text-slate-500 tracking-wide">
+                  <th class="p-3 font-semibold">Player</th>
+                  <th class="p-3 font-semibold text-center w-16">Pos</th>
+                  <th class="p-3 font-semibold text-center">ADP</th>
+                  <th class="p-3 font-semibold text-center">Times Drafted</th>
+                  <th class="p-3 font-semibold text-center">% Drafted</th>
+                </tr>
+              </thead>
+              <tbody class="text-sm md:text-base text-slate-700">
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. Specific Player History -->
+        <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 mb-4">Player Look Up</h3>
+          
+          <div class="w-full md:w-1/2 mb-6">
+            <select id="manager-player-select" placeholder="Select a drafted player..." class="w-full"></select>
+          </div>
+
+          <div id="manager-player-details" class="hidden">
+            <div class="flex items-center gap-4 mb-4">
+              <img id="mp-logo" src="" alt="Team" class="h-12 w-12 object-contain drop-shadow-sm">
+              <h4 id="mp-name" class="text-xl font-bold text-slate-900">Player</h4>
+            </div>
+            
+            <div class="overflow-x-auto rounded-lg border border-slate-200">
+              <table class="w-full text-left border-collapse" id="mp-table">
+                <thead>
+                  <tr class="bg-slate-100 text-xs md:text-sm uppercase text-slate-500 tracking-wide border-b border-slate-200">
+                    <th class="p-3 font-semibold">League</th>
+                    <th class="p-3 font-semibold text-center">Round</th>
+                    <th class="p-3 font-semibold text-center">Overall Pick</th>
+                  </tr>
+                </thead>
+                <tbody class="text-sm md:text-base text-slate-700">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
       </div>
 
@@ -142,16 +234,23 @@
   </div>
 
   <script>
-    // Register the DataLabels plugin globally for Chart.js
     Chart.register(ChartDataLabels);
-
     const csvUrl = "https://docs.google.com/spreadsheets/d/1wOBSMgmj3T_5ijNpnr4KacV7b7p189JoYh91FoblzT4/gviz/tq?tqx=out:csv&sheet=clean_draft_results";
     
-    // Global state
+    // Global App State
     let chartInstance = null;
-    let playersData = {}; // Raw object map
-    let sortedPlayersArray = []; // Array sorted by ADP
-    let tomSelectInstance = null; // Reference to the search dropdown
+    let managerChartInstance = null;
+    let playersData = {}; 
+    let sortedPlayersArray = []; 
+    let managersData = {};
+    let sortedManagersArray = [];
+
+    // Select Instances
+    let tsPlayerSelect = null; 
+    let tsManagerSelect = null;
+    let tsManagerPlayerSelect = null;
+
+    let currentSelectedManager = null; // Track active manager
 
     // Helpers
     function getTeamLogoUrl(teamCode) {
@@ -165,34 +264,38 @@
       if(pos === "LW") return "bg-orange-500 text-white";
       if(pos === "D") return "bg-purple-500 text-white";
       if(pos === "G") return "bg-black text-white";
-      return "bg-slate-200 text-slate-800"; // fallback
+      return "bg-slate-200 text-slate-800";
     }
 
     // Tab Logic
     function switchTab(tabName) {
-      const viewSummary = document.getElementById('view-summary');
-      const viewPlayer = document.getElementById('view-player');
-      const btnSummary = document.getElementById('btn-tab-summary');
-      const btnPlayer = document.getElementById('btn-tab-player');
-      const subtitle = document.getElementById('page-subtitle');
+      const views = {
+        'summary': document.getElementById('view-summary'),
+        'player': document.getElementById('view-player'),
+        'manager': document.getElementById('view-manager')
+      };
+      const buttons = {
+        'summary': document.getElementById('btn-tab-summary'),
+        'player': document.getElementById('btn-tab-player'),
+        'manager': document.getElementById('btn-tab-manager')
+      };
+      
+      const titles = {
+        'summary': 'Player ADP Summary',
+        'player': 'Player Analysis',
+        'manager': 'Manager Analysis'
+      };
 
-      if (tabName === 'summary') {
-        viewSummary.classList.replace('hidden', 'block');
-        viewPlayer.classList.replace('block', 'hidden');
-        
-        btnSummary.className = "flex-1 py-3 text-center font-bold text-sm md:text-base border-b-4 border-green-600 text-green-700 bg-white transition-colors";
-        btnPlayer.className = "flex-1 py-3 text-center font-bold text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors";
-        
-        subtitle.textContent = "Player ADP Summary";
-      } else {
-        viewSummary.classList.replace('block', 'hidden');
-        viewPlayer.classList.replace('hidden', 'block');
-        
-        btnPlayer.className = "flex-1 py-3 text-center font-bold text-sm md:text-base border-b-4 border-green-600 text-green-700 bg-white transition-colors";
-        btnSummary.className = "flex-1 py-3 text-center font-bold text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors";
-        
-        subtitle.textContent = "Player Analysis";
-      }
+      // Reset all
+      Object.keys(views).forEach(key => {
+        views[key].classList.replace('block', 'hidden');
+        buttons[key].className = "flex-1 min-w-[120px] py-3 text-center font-bold text-sm md:text-base border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors";
+      });
+
+      // Activate selected
+      views[tabName].classList.replace('hidden', 'block');
+      buttons[tabName].className = "flex-1 min-w-[120px] py-3 text-center font-bold text-sm md:text-base border-b-4 border-green-600 text-green-700 bg-white transition-colors";
+      document.getElementById('page-subtitle').textContent = titles[tabName];
     }
 
     // Fetch and Process Data
@@ -203,48 +306,57 @@
       complete: function(results) {
         const rawData = results.data;
 
-        // 1. Group data by player_id
         rawData.forEach(row => {
           if (!row.player_id || !row.pick_number) return;
           
+          // 1. Build Player Data
           if (!playersData[row.player_id]) {
-            playersData[row.player_id] = {
-              id: row.player_id,
-              name: row.player,
-              pos: row.pos,
-              team: row.team,
-              picks: []
-            };
+            playersData[row.player_id] = { id: row.player_id, name: row.player, pos: row.pos, team: row.team, picks: [] };
           }
-          playersData[row.player_id].picks.push({
-            league: row.league,
-            pick_number: row.pick_number,
-            fantasy_team: row.FANTASY_TEAM
-          });
+          playersData[row.player_id].picks.push({ league: row.league, pick_number: row.pick_number, fantasy_team: row.FANTASY_TEAM });
+
+          // 2. Build Manager Data
+          const mTeam = (row.FANTASY_TEAM || "Unknown").trim();
+          if (!managersData[mTeam]) {
+            managersData[mTeam] = { name: mTeam, leagues: new Set(), firstRoundPicks: [], players: {} };
+          }
+          managersData[mTeam].leagues.add(row.league);
+          
+          // Track 1st round pick slot
+          if (row.round === 1) {
+            managersData[mTeam].firstRoundPicks.push({ league: row.league, slot: row.pick });
+          }
+
+          // Track players drafted by this manager (added round)
+          if (!managersData[mTeam].players[row.player_id]) {
+            managersData[mTeam].players[row.player_id] = { id: row.player_id, name: row.player, team: row.team, pos: row.pos, count: 0, pickHistory: [] };
+          }
+          managersData[mTeam].players[row.player_id].count += 1;
+          managersData[mTeam].players[row.player_id].pickHistory.push({ league: row.league, round: row.round, pick_number: row.pick_number });
         });
 
-        // 2. Calculate ADP and Sort
+        // Finalize sorting arrays
         sortedPlayersArray = Object.values(playersData).map(player => {
-           const total = player.picks.reduce((sum, p) => sum + p.pick_number, 0);
-           player.overallAdp = total / player.picks.length;
-           player.picks.sort((a, b) => a.league - b.league); // Sort picks chronologically
+           player.overallAdp = player.picks.reduce((sum, p) => sum + p.pick_number, 0) / player.picks.length;
+           player.picks.sort((a, b) => a.league - b.league);
            return player;
-        });
-        sortedPlayersArray.sort((a, b) => a.overallAdp - b.overallAdp);
+        }).sort((a, b) => a.overallAdp - b.overallAdp);
 
-        // 3. Build ADP Table & Dropdown
+        sortedManagersArray = Object.keys(managersData).sort((a,b) => a.localeCompare(b));
+
+        // Build UI
         buildAdpTable();
         buildPlayerDropdown();
+        buildManagerDropdown();
 
-        // Reveal UI
         document.getElementById("loading-state").classList.add("hidden");
         document.getElementById("app-content").classList.remove("hidden");
-      },
-      error: function() {
-        document.getElementById("loading-state").innerHTML = '<span class="text-red-500 font-bold">Failed to load data. Make sure the Google Sheet is public.</span>';
       }
     });
 
+    // ==========================================
+    // VIEW 1 & 2: PLAYER ADP LOGIC
+    // ==========================================
     function buildAdpTable() {
       const tbody = document.querySelector("#adp-table tbody");
       sortedPlayersArray.forEach((player, index) => {
@@ -253,14 +365,10 @@
         tr.innerHTML = `
           <td class="p-3 font-semibold text-slate-500 text-center">${index + 1}</td>
           <td class="p-3 text-center align-middle">
-            <img src="${getTeamLogoUrl(player.team)}" alt="${player.team}" 
-                 class="h-12 w-12 md:h-16 md:w-16 object-contain inline-block drop-shadow-sm"
-                 onerror="this.style.display='none';"> 
+            <img src="${getTeamLogoUrl(player.team)}" class="h-12 w-12 md:h-16 md:w-16 object-contain inline-block drop-shadow-sm" onerror="this.style.display='none';"> 
           </td>
           <td class="p-3 font-bold text-slate-900 text-base md:text-lg whitespace-nowrap">${player.name}</td>
-          <td class="p-3 text-center">
-            <span class="px-2.5 py-1 text-xs md:text-sm font-bold rounded-md shadow-sm ${getPosColorClass(player.pos)}">${player.pos}</span>
-          </td>
+          <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs md:text-sm font-bold rounded-md shadow-sm ${getPosColorClass(player.pos)}">${player.pos}</span></td>
           <td class="p-3 text-right font-mono font-bold text-slate-700 text-base md:text-lg">${player.overallAdp.toFixed(1)}</td>
         `;
         tbody.appendChild(tr);
@@ -269,8 +377,6 @@
 
     function buildPlayerDropdown() {
       const selectEl = document.getElementById("player-select");
-      
-      // Inject options (Name only)
       sortedPlayersArray.forEach((p) => {
         const option = document.createElement("option");
         option.value = p.id;
@@ -278,26 +384,12 @@
         selectEl.appendChild(option);
       });
 
-      // Initialize Tom Select for searching
-      tomSelectInstance = new TomSelect("#player-select", {
-        create: false,
-        sortField: { field: "$order" }, // Keeps the array sorted exactly how we fed it (by ADP)
-        placeholder: "Type a player's name..."
-      });
-
-      // Listen for changes
-      tomSelectInstance.on("change", (value) => {
-        if(value) updatePlayerView(playersData[value]);
-      });
-
-      // Load first player by default
-      if (sortedPlayersArray.length > 0) {
-        tomSelectInstance.setValue(sortedPlayersArray[0].id);
-      }
+      tsPlayerSelect = new TomSelect("#player-select", { create: false, sortField: { field: "$order" }, placeholder: "Type a player's name..." });
+      tsPlayerSelect.on("change", (value) => { if(value) updatePlayerView(playersData[value]); });
+      if (sortedPlayersArray.length > 0) tsPlayerSelect.setValue(sortedPlayersArray[0].id);
     }
 
     function updatePlayerView(player) {
-      // Profile Header
       document.getElementById("profile-name").textContent = player.name;
       document.getElementById("profile-adp").textContent = player.overallAdp.toFixed(1);
       
@@ -310,7 +402,6 @@
       posEl.textContent = player.pos;
       posEl.className = `px-2.5 py-1 text-xs md:text-sm font-bold rounded-md shadow-sm ${getPosColorClass(player.pos)}`;
 
-      // Chart - Format X labels as BB1, BB2, etc.
       const leagues = player.picks.map(p => `BB${p.league}`);
       const pickPositions = player.picks.map(p => p.pick_number);
 
@@ -324,12 +415,12 @@
           datasets: [{
             label: 'Draft Position',
             data: pickPositions,
-            borderColor: '#94a3b8', // Slate-400 for the line
-            backgroundColor: 'rgba(100, 116, 139, 0.1)', // Subtle grey fill
+            borderColor: '#94a3b8',
+            backgroundColor: 'rgba(100, 116, 139, 0.1)',
             borderWidth: 3,
-            pointBackgroundColor: '#475569', // Slate-600 for the points
-            pointRadius: 14, // Made large enough to fit double/triple digits inside
-            pointHoverRadius: 16,
+            pointBackgroundColor: '#475569',
+            pointRadius: 10,
+            pointHoverRadius: 12,
             fill: true,
             tension: 0.1 
           }]
@@ -338,47 +429,22 @@
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            x: {
-              ticks: {
-                maxRotation: 45, // Lock labels to 45 degrees
-                minRotation: 45
-              }
-            },
-            y: {
-              beginAtZero: true, // Start at 0 on the bottom
-              grace: 3, // Adds a buffer of 3 units above the highest draft pick
-              ticks: {
-                stepSize: 1, // Ensure only whole integers are shown
-                precision: 0
-              },
-              title: { display: true, text: 'Overall Pick Number', font: { weight: 'bold' } }
-            }
+            x: { ticks: { maxRotation: 45, minRotation: 45 } },
+            y: { beginAtZero: true, grace: 3, ticks: { stepSize: 1, precision: 0 }, title: { display: true, text: 'Overall Pick Number', font: { weight: 'bold' } } }
           },
           plugins: {
             legend: { display: false },
-            tooltip: {
-              callbacks: {
-                afterLabel: function(context) {
-                  return `Drafted by: ${player.picks[context.dataIndex].fantasy_team}`;
-                }
-              }
-            },
+            tooltip: { callbacks: { afterLabel: function(context) { return `Drafted by: ${player.picks[context.dataIndex].fantasy_team}`; } } },
             datalabels: {
-              color: '#ffffff', // White text inside the grey circles
-              font: {
-                weight: 'bold',
-                size: 11
-              },
-              align: 'center', // Centers the label directly inside the point
-              formatter: function(value) {
-                return value; // Displays the pick_number
-              }
+              color: '#ffffff',
+              font: { weight: 'bold', size: 10 },
+              align: 'center',
+              formatter: function(value) { return value; }
             }
           }
         }
       });
 
-      // Team History Table
       const teamStats = {};
       player.picks.forEach(p => {
         if (!teamStats[p.fantasy_team]) teamStats[p.fantasy_team] = { count: 0, sum: 0 };
@@ -386,29 +452,176 @@
         teamStats[p.fantasy_team].sum += p.pick_number;
       });
 
-      const teamArray = Object.keys(teamStats).map(name => ({
-        name,
-        count: teamStats[name].count,
-        personalAdp: teamStats[name].sum / teamStats[name].count
-      })).sort((a, b) => b.count - a.count);
-
+      const teamArray = Object.keys(teamStats).map(name => ({ name, count: teamStats[name].count, personalAdp: teamStats[name].sum / teamStats[name].count })).sort((a, b) => b.count - a.count);
       const tbody = document.querySelector("#team-history-table tbody");
       tbody.innerHTML = "";
       
-      if (teamArray.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">No draft data found.</td></tr>`;
-      } else {
-        teamArray.forEach(t => {
-          const tr = document.createElement("tr");
-          tr.className = "border-b hover:bg-slate-50 transition-colors";
-          tr.innerHTML = `
-            <td class="p-3 font-bold text-slate-900">${t.name}</td>
-            <td class="p-3 text-center font-semibold text-slate-600">${t.count}</td>
-            <td class="p-3 text-center font-mono font-bold text-slate-700">${t.personalAdp.toFixed(1)}</td>
-          `;
-          tbody.appendChild(tr);
-        });
+      teamArray.forEach(t => {
+        const tr = document.createElement("tr");
+        tr.className = "border-b hover:bg-slate-50 transition-colors";
+        tr.innerHTML = `<td class="p-3 font-bold text-slate-900">${t.name}</td><td class="p-3 text-center font-semibold text-slate-600">${t.count}</td><td class="p-3 text-center font-mono font-bold text-slate-700">${t.personalAdp.toFixed(1)}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ==========================================
+    // VIEW 3: MANAGER LOGIC
+    // ==========================================
+    function buildManagerDropdown() {
+      const selectEl = document.getElementById("manager-select");
+      sortedManagersArray.forEach((mName) => {
+        const option = document.createElement("option");
+        option.value = mName;
+        option.textContent = mName;
+        selectEl.appendChild(option);
+      });
+
+      tsManagerSelect = new TomSelect("#manager-select", { create: false, placeholder: "Type a manager's name..." });
+      tsManagerSelect.on("change", (value) => { if(value) updateManagerView(managersData[value]); });
+      
+      tsManagerPlayerSelect = new TomSelect("#manager-player-select", { create: false, placeholder: "Select a drafted player..." });
+      tsManagerPlayerSelect.on("change", (value) => { if(value) renderManagerPlayerHistory(value); });
+
+      // Handle Position Filter Change
+      document.getElementById("manager-pos-filter").addEventListener("change", () => {
+        if (currentSelectedManager) renderManagerPlayersTable(currentSelectedManager);
+      });
+
+      if (sortedManagersArray.length > 0) tsManagerSelect.setValue(sortedManagersArray[0]);
+    }
+
+    function updateManagerView(manager) {
+      currentSelectedManager = manager;
+      
+      // 1. Text Summaries
+      document.getElementById("manager-name").textContent = manager.name;
+      document.getElementById("manager-leagues-count").textContent = manager.leagues.size;
+
+      // 2. Draft Slots Chart (Bar Chart)
+      const sortedLeagues = Array.from(manager.leagues).sort((a,b)=>a-b);
+      const xLabels = sortedLeagues.map(l => `BB${l}`);
+      const slotData = sortedLeagues.map(l => {
+        const pickEntry = manager.firstRoundPicks.find(p => p.league === l);
+        return pickEntry ? pickEntry.slot : null; 
+      });
+
+      const ctx = document.getElementById('managerSlotsChart').getContext('2d');
+      if (managerChartInstance) managerChartInstance.destroy();
+      
+      managerChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: xLabels,
+          datasets: [{
+            label: '1st Round Draft Slot',
+            data: slotData,
+            backgroundColor: '#94a3b8', // Updated to slate grey
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { maxRotation: 45, minRotation: 45 } },
+            y: { beginAtZero: true, max: 12, ticks: { stepSize: 1 }, title: { display: true, text: 'Draft Position', font: { weight: 'bold' } } }
+          },
+          plugins: {
+            legend: { display: false },
+            datalabels: { color: '#ffffff', font: { weight: 'bold' }, align: 'center', anchor: 'center' }
+          }
+        }
+      });
+
+      // 3. Reset Filter & Render Table
+      document.getElementById("manager-pos-filter").value = "ALL";
+      renderManagerPlayersTable(manager);
+
+      // Reset nested player view
+      document.getElementById("manager-player-details").classList.add("hidden");
+    }
+
+    function renderManagerPlayersTable(manager) {
+      const tbody = document.querySelector("#manager-players-table tbody");
+      tbody.innerHTML = "";
+      tsManagerPlayerSelect.clearOptions();
+      tsManagerPlayerSelect.clear();
+      
+      const totalLeagues = manager.leagues.size;
+      const posFilter = document.getElementById("manager-pos-filter").value;
+
+      // Map to array and append global ADP
+      let draftedPlayersArray = Object.values(manager.players).map(p => {
+        return {
+          ...p,
+          globalAdp: playersData[p.id].overallAdp
+        };
+      });
+
+      // Apply Position Filter
+      if (posFilter !== "ALL") {
+        draftedPlayersArray = draftedPlayersArray.filter(p => p.pos === posFilter);
       }
+      
+      // Sort: % Drafted (which is just 'count') descending -> then Global ADP ascending
+      draftedPlayersArray.sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        return a.globalAdp - b.globalAdp;
+      });
+
+      if (draftedPlayersArray.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No players found for this position.</td></tr>`;
+        return;
+      }
+
+      draftedPlayersArray.forEach((p) => {
+        // Build table row
+        const pct = ((p.count / totalLeagues) * 100).toFixed(1);
+        const tr = document.createElement("tr");
+        tr.className = "border-b hover:bg-slate-50 transition-colors";
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-slate-900 whitespace-nowrap">${p.name}</td>
+          <td class="p-3 text-center"><span class="px-2 py-0.5 text-xs font-bold rounded-md shadow-sm ${getPosColorClass(p.pos)}">${p.pos}</span></td>
+          <td class="p-3 text-center font-mono font-medium text-slate-600">${p.globalAdp.toFixed(1)}</td>
+          <td class="p-3 text-center font-semibold text-slate-600">${p.count}</td>
+          <td class="p-3 text-center font-mono font-bold text-slate-700">${pct}%</td>
+        `;
+        tbody.appendChild(tr);
+
+        // Add to dropdown (we only populate dropdown with the currently filtered list to keep them in sync)
+        tsManagerPlayerSelect.addOption({ value: p.id, text: p.name });
+      });
+    }
+
+    function renderManagerPlayerHistory(playerId) {
+      if (!currentSelectedManager) return;
+      const playerObj = currentSelectedManager.players[playerId];
+      if (!playerObj) return;
+
+      document.getElementById("manager-player-details").classList.remove("hidden");
+      document.getElementById("mp-name").textContent = playerObj.name;
+      
+      const logoEl = document.getElementById("mp-logo");
+      logoEl.src = getTeamLogoUrl(playerObj.team);
+      logoEl.onerror = () => { logoEl.style.display = 'none'; };
+      logoEl.style.display = 'block';
+
+      const tbody = document.querySelector("#mp-table tbody");
+      tbody.innerHTML = "";
+      
+      // Sort chronologically by league
+      playerObj.pickHistory.sort((a,b) => a.league - b.league);
+
+      playerObj.pickHistory.forEach(h => {
+        const tr = document.createElement("tr");
+        tr.className = "border-b";
+        tr.innerHTML = `
+          <td class="p-3 font-semibold text-slate-700">BB${h.league}</td>
+          <td class="p-3 text-center font-mono font-medium text-slate-800">${h.round}</td>
+          <td class="p-3 text-center font-mono font-bold text-slate-900">${h.pick_number}</td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
   </script>
 </body>
