@@ -89,7 +89,7 @@
       <!-- ========================================== -->
       <div id="view-player" class="hidden p-4 md:p-6">
         <div class="mb-6">
-          <label for="player-select" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Search & Select Player</label>
+          <label for="player-select" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Select Player</label>
           <div class="w-full md:w-1/2">
             <select id="player-select" placeholder="Type a player's name..." class="w-full"></select>
           </div>
@@ -140,7 +140,7 @@
         
         <!-- 1. Manager Selector -->
         <div class="mb-8">
-          <label for="manager-select" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Search & Select Manager</label>
+          <label for="manager-select" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Select Manager</label>
           <div class="w-full md:w-1/2">
             <select id="manager-select" placeholder="Type a manager's name..." class="w-full"></select>
           </div>
@@ -201,6 +201,7 @@
         <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-sm">
           <h3 class="text-lg font-bold text-slate-800 mb-4">Player Look Up</h3>
           
+          <label for="manager-player-select" class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Select Drafted Player</label>
           <div class="w-full md:w-1/2 mb-6">
             <select id="manager-player-select" placeholder="Select a drafted player..." class="w-full"></select>
           </div>
@@ -327,7 +328,7 @@
             managersData[mTeam].firstRoundPicks.push({ league: row.league, slot: row.pick });
           }
 
-          // Track players drafted by this manager (added round)
+          // Track players drafted by this manager
           if (!managersData[mTeam].players[row.player_id]) {
             managersData[mTeam].players[row.player_id] = { id: row.player_id, name: row.player, team: row.team, pos: row.pos, count: 0, pickHistory: [] };
           }
@@ -515,7 +516,7 @@
           datasets: [{
             label: '1st Round Draft Slot',
             data: slotData,
-            backgroundColor: '#94a3b8', // Updated to slate grey
+            backgroundColor: '#94a3b8', // Slate grey
             borderRadius: 4
           }]
         },
@@ -536,9 +537,6 @@
       // 3. Reset Filter & Render Table
       document.getElementById("manager-pos-filter").value = "ALL";
       renderManagerPlayersTable(manager);
-
-      // Reset nested player view
-      document.getElementById("manager-player-details").classList.add("hidden");
     }
 
     function renderManagerPlayersTable(manager) {
@@ -571,6 +569,7 @@
 
       if (draftedPlayersArray.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">No players found for this position.</td></tr>`;
+        document.getElementById("manager-player-details").classList.add("hidden");
         return;
       }
 
@@ -591,6 +590,9 @@
         // Add to dropdown (we only populate dropdown with the currently filtered list to keep them in sync)
         tsManagerPlayerSelect.addOption({ value: p.id, text: p.name });
       });
+
+      // Automatically select and render the first player in the filtered list
+      tsManagerPlayerSelect.setValue(draftedPlayersArray[0].id);
     }
 
     function renderManagerPlayerHistory(playerId) {
