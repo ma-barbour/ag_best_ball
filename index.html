@@ -193,7 +193,6 @@
                 <tr class="text-[10px] md:text-sm uppercase text-slate-500 tracking-wide">
                   <th class="p-1.5 md:p-3 font-semibold">Player</th>
                   <th class="p-1.5 md:p-3 font-semibold text-center w-12 md:w-16">Pos</th>
-                  <th class="p-1.5 md:p-3 font-semibold text-center">ADP</th>
                   <th class="p-1.5 md:p-3 font-semibold text-center leading-tight">Times<br class="md:hidden"> Drafted</th>
                   <th class="p-1.5 md:p-3 font-semibold text-center leading-tight">%<br class="md:hidden"> Drafted</th>
                 </tr>
@@ -209,7 +208,6 @@
         <div class="bg-slate-50 border border-slate-200 p-3 md:p-5 rounded-xl shadow-sm mb-8 md:mb-10">
           <h3 class="text-base md:text-lg font-bold text-slate-800 mb-2 md:mb-4">Player Look Up</h3>
           
-          <label for="manager-player-select" class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Select Drafted Player</label>
           <div class="w-full md:w-1/2 mb-4 md:mb-6">
             <select id="manager-player-select" placeholder="Select drafted player..." class="w-full"></select>
           </div>
@@ -694,7 +692,7 @@
       });
 
       if (draftedPlayersArray.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-3 md:p-4 text-center text-slate-500 text-xs md:text-base">No players found for this position.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="p-3 md:p-4 text-center text-slate-500 text-xs md:text-base">No players found for this position.</td></tr>`;
         document.getElementById("manager-player-details").classList.add("hidden");
         return;
       }
@@ -709,7 +707,6 @@
             ${p.name}
           </td>
           <td class="p-1.5 md:p-3 text-center"><span class="px-1.5 py-0.5 md:px-2 md:py-0.5 text-[10px] md:text-xs font-bold rounded-md shadow-sm ${getPosColorClass(p.pos)}">${p.pos}</span></td>
-          <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${p.globalAdp.toFixed(1)}</td>
           <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${p.count}</td>
           <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${pct}%</td>
         `;
