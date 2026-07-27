@@ -39,7 +39,7 @@
     <!-- Header Section -->
     <div class="bg-green-950 p-4 md:p-6 border-b-4 border-slate-300">
       <div class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</div>
-      <h1 id="page-subtitle" class="text-base md:text-xl font-bold text-slate-300">Player ADP Summary</h1>
+      <h1 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h1>
     </div>
 
     <!-- Tab Navigation -->
@@ -79,10 +79,10 @@
             <thead>
               <tr class="border-b-2 border-slate-200 text-[10px] md:text-sm uppercase text-slate-500 tracking-wide">
                 <th class="p-1.5 md:p-3 font-semibold w-8 md:w-12 text-center">Rank</th>
-                <th class="p-1.5 md:p-3 font-semibold text-center w-10 md:w-20">Team</th>
+                <th class="p-1.5 md:p-3 font-semibold text-center w-12 md:w-24">Team</th>
                 <th class="p-1.5 md:p-3 font-semibold">Player</th>
                 <th class="p-1.5 md:p-3 font-semibold text-center w-10 md:w-16">Pos</th>
-                <th class="p-1.5 md:p-3 font-semibold text-right w-12 md:w-20">ADP</th>
+                <th class="p-1.5 md:p-3 font-semibold text-center w-12 md:w-20">ADP</th>
               </tr>
             </thead>
             <tbody class="text-xs md:text-base">
@@ -99,18 +99,18 @@
         <div class="mb-4 md:mb-6">
           <label for="player-select" class="block text-xs md:text-sm font-bold text-slate-700 mb-1 md:mb-2 uppercase tracking-wide">Select Player</label>
           <div class="w-full md:w-1/2">
-            <select id="player-select" placeholder="Type a player's name..." class="w-full"></select>
+            <select id="player-select" placeholder="Select player..." class="w-full"></select>
           </div>
         </div>
 
         <div class="flex items-center gap-3 md:gap-4 bg-slate-50 border border-slate-200 p-3 md:p-4 rounded-xl mb-6 md:mb-8 shadow-sm">
-          <img id="profile-logo" src="" alt="Team Logo" class="h-10 w-10 md:h-16 md:w-16 object-contain drop-shadow-sm">
+          <img id="profile-logo" src="" alt="Team Logo" class="h-12 w-12 md:h-20 md:w-20 object-contain drop-shadow-sm">
           <div class="flex-1">
             <h2 id="profile-name" class="text-lg md:text-3xl font-extrabold text-slate-900 leading-tight">Player Name</h2>
             <div class="flex items-center gap-2 mt-1">
               <span id="profile-pos" class="px-1.5 py-0.5 md:px-2.5 md:py-1 text-[10px] md:text-sm font-bold rounded-md shadow-sm text-white">POS</span>
               <span class="text-slate-500 font-medium text-xs md:text-base">|</span>
-              <span class="text-slate-700 font-bold text-xs md:text-base">ADP: <span id="profile-adp" class="text-slate-900 font-mono">0.0</span></span>
+              <span class="text-slate-700 font-bold text-xs md:text-base">ADP: <span id="profile-adp" class="text-slate-900 font-medium">0.0</span></span>
             </div>
           </div>
         </div>
@@ -150,15 +150,15 @@
         <div class="mb-6 md:mb-8">
           <label for="manager-select" class="block text-xs md:text-sm font-bold text-slate-700 mb-1 md:mb-2 uppercase tracking-wide">Select Manager</label>
           <div class="w-full md:w-1/2">
-            <select id="manager-select" placeholder="Type a manager's name..." class="w-full"></select>
+            <select id="manager-select" placeholder="Select manager..." class="w-full"></select>
           </div>
         </div>
 
         <!-- 2. Leagues Entered Summary -->
         <div class="bg-slate-50 border border-slate-200 p-4 md:p-5 rounded-xl mb-6 md:mb-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
           <h2 id="manager-name" class="text-lg md:text-2xl font-extrabold text-slate-900 leading-tight">Manager Name</h2>
-          <div class="text-xs md:text-base font-bold text-slate-600 uppercase tracking-wide">
-            Total Leagues Entered: <span id="manager-leagues-count" class="text-base md:text-2xl font-black text-slate-900 ml-1 md:ml-2">0</span>
+          <div class="text-xs md:text-base font-bold text-slate-600 uppercase tracking-wide flex items-center">
+            Total Leagues Entered: <span id="manager-leagues-count" class="text-base md:text-xl font-medium text-slate-700 ml-1 md:ml-2">0</span>
           </div>
         </div>
 
@@ -176,7 +176,7 @@
             <h3 class="text-base md:text-lg font-bold text-slate-800">Player Selection History</h3>
             <div class="flex items-center gap-2 self-start md:self-auto">
               <label for="manager-pos-filter" class="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wide">Filter POS:</label>
-              <select id="manager-pos-filter" class="p-1 md:p-1.5 border border-slate-300 rounded text-xs md:text-sm font-semibold bg-white outline-none focus:border-green-500">
+              <select id="manager-pos-filter" class="p-1 md:p-1.5 border border-slate-300 rounded text-xs md:text-sm font-medium text-slate-700 bg-white outline-none focus:border-green-500">
                 <option value="ALL">All</option>
                 <option value="C">C</option>
                 <option value="LW">LW</option>
@@ -192,7 +192,7 @@
               <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 shadow-sm z-10">
                 <tr class="text-[10px] md:text-sm uppercase text-slate-500 tracking-wide">
                   <th class="p-1.5 md:p-3 font-semibold">Player</th>
-                  <th class="p-1.5 md:p-3 font-semibold text-center">Pos</th>
+                  <th class="p-1.5 md:p-3 font-semibold text-center w-12 md:w-16">Pos</th>
                   <th class="p-1.5 md:p-3 font-semibold text-center">ADP</th>
                   <th class="p-1.5 md:p-3 font-semibold text-center leading-tight">Times<br class="md:hidden"> Drafted</th>
                   <th class="p-1.5 md:p-3 font-semibold text-center leading-tight">%<br class="md:hidden"> Drafted</th>
@@ -211,13 +211,13 @@
           
           <label for="manager-player-select" class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Select Drafted Player</label>
           <div class="w-full md:w-1/2 mb-4 md:mb-6">
-            <select id="manager-player-select" placeholder="Select a drafted player..." class="w-full"></select>
+            <select id="manager-player-select" placeholder="Select drafted player..." class="w-full"></select>
           </div>
 
           <div id="manager-player-details" class="hidden">
             <div class="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-              <img id="mp-logo" src="" alt="Team" class="h-8 w-8 md:h-12 md:w-12 object-contain drop-shadow-sm">
-              <h4 id="mp-name" class="text-lg md:text-xl font-bold text-slate-900 leading-tight">Player</h4>
+              <img id="mp-logo" src="" alt="Team" class="h-10 w-10 md:h-14 md:w-14 object-contain drop-shadow-sm">
+              <h4 id="mp-name" class="text-sm md:text-xl font-bold text-slate-900 leading-tight">Player</h4>
             </div>
             
             <div class="overflow-x-auto rounded-lg border border-slate-200">
@@ -358,7 +358,7 @@
     function getPosColorClass(pos) {
       if(pos === "C") return "bg-red-500 text-white";
       if(pos === "RW") return "bg-blue-500 text-white";
-      if(pos === "LW") return "bg-orange-500 text-white";
+      if(pos === "LW") return "bg-yellow-500 text-slate-900"; 
       if(pos === "D") return "bg-purple-500 text-white";
       if(pos === "G") return "bg-black text-white";
       return "bg-slate-200 text-slate-800";
@@ -367,7 +367,7 @@
     function getPosHexColor(pos) {
       if(pos === "C") return "#ef4444"; // red-500
       if(pos === "RW") return "#3b82f6"; // blue-500
-      if(pos === "LW") return "#f97316"; // orange-500
+      if(pos === "LW") return "#eab308"; // yellow-500
       if(pos === "D") return "#a855f7"; // purple-500
       if(pos === "G") return "#000000"; // black
       return "#cbd5e1";
@@ -404,13 +404,6 @@
         'trends': document.getElementById('btn-tab-trends')
       };
       
-      const titles = {
-        'summary': 'Player ADP Summary',
-        'player': 'Player Analysis',
-        'manager': 'Manager Analysis',
-        'trends': 'Draft Trends'
-      };
-
       // Reset all
       Object.keys(views).forEach(key => {
         views[key].classList.replace('block', 'hidden');
@@ -420,7 +413,6 @@
       // Activate selected
       views[tabName].classList.replace('hidden', 'block');
       buttons[tabName].className = "flex-1 min-w-[110px] py-2 md:py-3 text-center font-bold text-xs md:text-sm border-b-4 border-green-600 text-green-700 bg-white transition-colors";
-      document.getElementById('page-subtitle').textContent = titles[tabName];
     }
 
     // Fetch and Process Data
@@ -471,11 +463,6 @@
         sortedPlayersArray = Object.values(playersData).map(player => {
            player.overallAdp = player.picks.reduce((sum, p) => sum + p.pick_number, 0) / player.picks.length;
            player.picks.sort((a, b) => a.league - b.league);
-           
-           // Calculate Trend Score (Slope * -1)
-           const slope = calculateSlope(player.picks);
-           player.trendScore = slope * -1; 
-           
            return player;
         }).sort((a, b) => a.overallAdp - b.overallAdp);
 
@@ -501,13 +488,13 @@
         const tr = document.createElement("tr");
         tr.className = "border-b hover:bg-slate-50 transition-colors";
         tr.innerHTML = `
-          <td class="p-1.5 md:p-3 font-semibold text-slate-500 text-center text-xs md:text-base">${index + 1}</td>
+          <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${index + 1}</td>
           <td class="p-1.5 md:p-3 text-center align-middle">
-            <img src="${getTeamLogoUrl(player.team)}" class="h-8 w-8 md:h-16 md:w-16 object-contain inline-block drop-shadow-sm" onerror="this.style.display='none';"> 
+            <img src="${getTeamLogoUrl(player.team)}" class="h-10 w-10 md:h-14 md:w-14 object-contain inline-block drop-shadow-sm" onerror="this.style.display='none';"> 
           </td>
-          <td class="p-1.5 md:p-3 font-bold text-slate-900 text-xs md:text-lg whitespace-nowrap">${player.name}</td>
+          <td class="p-1.5 md:p-3 font-bold text-slate-900 text-sm md:text-lg whitespace-nowrap">${player.name}</td>
           <td class="p-1.5 md:p-3 text-center"><span class="px-1.5 py-0.5 md:px-2.5 md:py-1 text-[10px] md:text-sm font-bold rounded-md shadow-sm ${getPosColorClass(player.pos)}">${player.pos}</span></td>
-          <td class="p-1.5 md:p-3 text-right font-mono font-bold text-slate-700 text-xs md:text-lg">${player.overallAdp.toFixed(1)}</td>
+          <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${player.overallAdp.toFixed(1)}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -522,7 +509,7 @@
         selectEl.appendChild(option);
       });
 
-      tsPlayerSelect = new TomSelect("#player-select", { create: false, sortField: { field: "$order" }, placeholder: "Type a player's name..." });
+      tsPlayerSelect = new TomSelect("#player-select", { create: false, sortField: { field: "$order" }, placeholder: "Select player..." });
       tsPlayerSelect.on("change", (value) => { if(value) updatePlayerView(playersData[value]); });
       if (sortedPlayersArray.length > 0) tsPlayerSelect.setValue(sortedPlayersArray[0].id);
     }
@@ -597,7 +584,7 @@
       teamArray.forEach(t => {
         const tr = document.createElement("tr");
         tr.className = "border-b hover:bg-slate-50 transition-colors";
-        tr.innerHTML = `<td class="p-2 md:p-3 font-bold text-slate-900">${t.name}</td><td class="p-2 md:p-3 text-center font-semibold text-slate-600">${t.count}</td><td class="p-2 md:p-3 text-center font-mono font-bold text-slate-700">${t.personalAdp.toFixed(1)}</td>`;
+        tr.innerHTML = `<td class="p-2 md:p-3 font-bold text-slate-900 text-sm md:text-lg">${t.name}</td><td class="p-2 md:p-3 text-center font-medium text-slate-700 text-sm md:text-base">${t.count}</td><td class="p-2 md:p-3 text-center font-medium text-slate-700 text-sm md:text-base">${t.personalAdp.toFixed(1)}</td>`;
         tbody.appendChild(tr);
       });
     }
@@ -614,10 +601,10 @@
         selectEl.appendChild(option);
       });
 
-      tsManagerSelect = new TomSelect("#manager-select", { create: false, placeholder: "Type a manager's name..." });
+      tsManagerSelect = new TomSelect("#manager-select", { create: false, placeholder: "Select manager..." });
       tsManagerSelect.on("change", (value) => { if(value) updateManagerView(managersData[value]); });
       
-      tsManagerPlayerSelect = new TomSelect("#manager-player-select", { create: false, placeholder: "Select a drafted player..." });
+      tsManagerPlayerSelect = new TomSelect("#manager-player-select", { create: false, placeholder: "Select drafted player..." });
       tsManagerPlayerSelect.on("change", (value) => { if(value) renderManagerPlayerHistory(value); });
 
       document.getElementById("manager-pos-filter").addEventListener("change", () => {
@@ -658,8 +645,16 @@
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: window.innerWidth < 768 ? 10 : 12 } } },
-            y: { beginAtZero: true, max: 12, ticks: { stepSize: 1, font: { size: window.innerWidth < 768 ? 10 : 12 } }, title: { display: true, text: 'Draft Position', font: { weight: 'bold', size: window.innerWidth < 768 ? 10 : 12 } } }
+            x: { 
+              grid: { display: false },
+              ticks: { maxRotation: 45, minRotation: 45, font: { size: window.innerWidth < 768 ? 10 : 12 } } 
+            },
+            y: { 
+              beginAtZero: true, 
+              max: 12, 
+              ticks: { stepSize: 1, font: { size: window.innerWidth < 768 ? 10 : 12 } }, 
+              title: { display: true, text: 'Draft Position', font: { weight: 'bold', size: window.innerWidth < 768 ? 10 : 12 } } 
+            }
           },
           plugins: {
             legend: { display: false },
@@ -709,11 +704,14 @@
         const tr = document.createElement("tr");
         tr.className = "border-b hover:bg-slate-50 transition-colors";
         tr.innerHTML = `
-          <td class="p-1.5 md:p-3 font-bold text-slate-900 whitespace-nowrap">${p.name}</td>
+          <td class="p-1.5 md:p-3 font-bold text-slate-900 whitespace-nowrap text-sm md:text-lg flex items-center gap-2">
+            <img src="${getTeamLogoUrl(p.team)}" class="h-8 w-8 md:h-12 md:w-12 object-contain drop-shadow-sm" onerror="this.style.display='none';"> 
+            ${p.name}
+          </td>
           <td class="p-1.5 md:p-3 text-center"><span class="px-1.5 py-0.5 md:px-2 md:py-0.5 text-[10px] md:text-xs font-bold rounded-md shadow-sm ${getPosColorClass(p.pos)}">${p.pos}</span></td>
-          <td class="p-1.5 md:p-3 text-center font-mono font-medium text-slate-600">${p.globalAdp.toFixed(1)}</td>
-          <td class="p-1.5 md:p-3 text-center font-semibold text-slate-600">${p.count}</td>
-          <td class="p-1.5 md:p-3 text-center font-mono font-bold text-slate-700">${pct}%</td>
+          <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${p.globalAdp.toFixed(1)}</td>
+          <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${p.count}</td>
+          <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${pct}%</td>
         `;
         tbody.appendChild(tr);
 
@@ -745,9 +743,9 @@
         const tr = document.createElement("tr");
         tr.className = "border-b";
         tr.innerHTML = `
-          <td class="p-2 md:p-3 font-semibold text-slate-700">BB${h.league}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-medium text-slate-800">${h.round}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-bold text-slate-900">${h.pick_number}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-sm md:text-base">BB${h.league}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${h.round}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${h.pick_number}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -774,12 +772,12 @@
         const tr = document.createElement("tr");
         tr.className = "border-b hover:bg-slate-50 transition-colors";
         tr.innerHTML = `
-          <td class="p-2 md:p-3 font-semibold text-slate-700">BB${l}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-medium">${c.C}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-medium">${c.LW}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-medium">${c.RW}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-medium">${c.D}</td>
-          <td class="p-2 md:p-3 text-center font-mono font-medium">${c.G}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-sm md:text-base">BB${l}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.C}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.LW}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.RW}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.D}</td>
+          <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.G}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -809,7 +807,7 @@
       posTrendsChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: rounds, // Just the round number now
+          labels: rounds, // Just the round number
           datasets: [
             { label: 'C', data: cData, backgroundColor: getPosHexColor('C') },
             { label: 'LW', data: lwData, backgroundColor: getPosHexColor('LW') },
@@ -825,7 +823,7 @@
             x: { 
               stacked: true, 
               grid: { display: false }, 
-              ticks: { font: { size: window.innerWidth < 768 ? 10 : 12 } } 
+              ticks: { maxRotation: 0, font: { size: window.innerWidth < 768 ? 10 : 12 } } 
             },
             y: { 
               stacked: true, 
@@ -835,18 +833,36 @@
             }
           },
           plugins: {
-            legend: { position: 'bottom', labels: { font: { weight: 'bold' } } },
+            legend: { position: 'bottom', labels: { font: { weight: 'bold' }, padding: 20 } },
             datalabels: { display: false } 
           }
         }
       });
 
       // 2. Hot and Cold Lists
-      // Filter: only players who have been drafted more than once (> 1) and have a non-zero trend score
-      let trendCandidates = sortedPlayersArray.filter(p => p.picks.length > 1 && p.trendScore !== 0);
+      // Determine the top 10 highest league numbers
+      const allLgs = new Set();
+      sortedPlayersArray.forEach(p => p.picks.forEach(pick => allLgs.add(pick.league)));
+      const top10Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 10);
+
+      // Filter: calculate slope using ONLY the top 10 most recent leagues
+      // Must be drafted in at least 3 of those recent leagues to qualify
+      let trendCandidates = [];
+      sortedPlayersArray.forEach(p => {
+         const recentPicks = p.picks.filter(pick => top10Leagues.includes(pick.league));
+         if (recentPicks.length >= 3) {
+            const slope = calculateSlope(recentPicks);
+            if (slope !== 0) {
+               trendCandidates.push({
+                  ...p,
+                  recentTrendScore: slope * -1
+               });
+            }
+         }
+      });
 
       // Sort descending by trendScore (Hot = highly positive score, Cold = highly negative score)
-      trendCandidates.sort((a, b) => b.trendScore - a.trendScore);
+      trendCandidates.sort((a, b) => b.recentTrendScore - a.recentTrendScore);
 
       const hotList = trendCandidates.slice(0, 10);
       const coldList = trendCandidates.slice(-10).reverse(); // Reverse so coldest is first
@@ -855,17 +871,17 @@
         const tbody = document.querySelector(`#${tableId} tbody`);
         tbody.innerHTML = "";
         list.forEach((p, index) => {
-          const scoreStr = p.trendScore > 0 ? `+${p.trendScore.toFixed(2)}` : p.trendScore.toFixed(2);
+          const scoreStr = p.recentTrendScore > 0 ? `+${p.recentTrendScore.toFixed(2)}` : p.recentTrendScore.toFixed(2);
           const scoreColor = isHot ? "text-red-600" : "text-blue-600";
           const tr = document.createElement("tr");
           tr.className = "border-b hover:bg-slate-50 transition-colors";
           tr.innerHTML = `
-            <td class="p-2 font-semibold text-slate-500 text-center">${index + 1}</td>
-            <td class="p-2 font-bold text-slate-900 flex items-center gap-2 md:gap-3">
-              <img src="${getTeamLogoUrl(p.team)}" class="h-8 w-8 md:h-10 md:w-10 object-contain drop-shadow-sm" onerror="this.style.display='none';"> 
+            <td class="p-2 font-medium text-slate-700 text-center text-sm md:text-base">${index + 1}</td>
+            <td class="p-2 font-bold text-slate-900 text-sm md:text-lg flex items-center gap-2 md:gap-3">
+              <img src="${getTeamLogoUrl(p.team)}" class="h-10 w-10 md:h-14 md:w-14 object-contain drop-shadow-sm" onerror="this.style.display='none';"> 
               <span class="whitespace-nowrap">${p.name}</span>
             </td>
-            <td class="p-2 text-center font-mono font-bold ${scoreColor} text-sm md:text-base">${scoreStr}</td>
+            <td class="p-2 font-medium text-center ${scoreColor} text-sm md:text-base">${scoreStr}</td>
           `;
           tbody.appendChild(tr);
         });
