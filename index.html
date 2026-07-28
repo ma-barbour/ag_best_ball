@@ -219,8 +219,8 @@
           </div>
         </div>
 
-        <div>
-          <h3 class="text-base md:text-lg font-bold text-slate-800 mb-2 md:mb-4 border-b border-slate-200 pb-1 md:pb-2">Team Compositions</h3>
+        <div class="mb-8 md:mb-10">
+          <h3 class="text-base md:text-lg font-bold text-slate-800 mb-2 md:mb-4 border-b border-slate-200 pb-1 md:pb-2">Manager's Team Compositions</h3>
           <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
             <table class="w-full text-left border-collapse" id="manager-compositions-table">
               <thead>
@@ -237,6 +237,13 @@
             </table>
           </div>
         </div>
+
+        <div>
+          <h3 class="text-base md:text-lg font-bold text-slate-800 mb-2 md:mb-4 border-b border-slate-200 pb-1 md:pb-2">Global Team Compositions</h3>
+          <p class="text-xs md:text-sm text-slate-500 mb-4">A summary of the frequency of complete roster compositions across all best ball leagues.</p>
+          <div id="macro-compositions-container"></div>
+        </div>
+
       </div>
 
       <!-- VIEW 4: DRAFT TRENDS -->
@@ -295,7 +302,7 @@
         </div>
       </div>
 
-      <!-- VIEW 5: SCHEDULE MATRIX & TEAM BUILDER -->
+      <!-- VIEW 5: TEAM BUILDER & SCHEDULE -->
       <div id="view-schedule" class="hidden p-3 md:p-6">
         
         <!-- 1. TEAM BUILDER FEATURE -->
@@ -572,10 +579,95 @@
       buildManagerDropdown();
       buildDraftTrends();
       buildScheduleTab();
+      buildMacroCompositionsTable();
 
       document.getElementById("loading-state").classList.add("hidden");
       document.getElementById("app-content").classList.remove("hidden");
     });
+
+    // ==========================================
+    // MACRO ROSTER CONSTRUCTION (Manager Tab)
+    // ==========================================
+    function buildMacroCompositionsTable() {
+      let macroCompositions = {};
+      let totalCompleteRosters = 0;
+
+      Object.values(managersData).forEach(manager => {
+        const comps = {};
+        manager.leagues.forEach(l => comps[l] = { C:0, LW:0, RW:0, D:0, G:0, total: 0 });
+
+        Object.values(manager.players).forEach(p => {
+          p.pickHistory.forEach(h => {
+             if(comps[h.league] && comps[h.league][p.pos] !== undefined) {
+                 comps[h.league][p.pos]++;
+                 comps[h.league].total++;
+             }
+          });
+        });
+
+        Object.values(comps).forEach(c => {
+          if (c.total === 24) {
+            totalCompleteRosters++;
+            const signature = `${c.C}-${c.LW}-${c.RW}-${c.D}-${c.G}`;
+            if (!macroCompositions[signature]) {
+              macroCompositions[signature] = { C: c.C, LW: c.LW, RW: c.RW, D: c.D, G: c.G, count: 0 };
+            }
+            macroCompositions[signature].count++;
+          }
+        });
+      });
+
+      const container = document.getElementById("macro-compositions-container");
+
+      if (totalCompleteRosters === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-50 border border-slate-200 p-6 rounded-xl text-center shadow-sm">
+            <span class="text-slate-500 italic font-medium">Waiting for complete rosters ...</span>
+          </div>
+        `;
+        return;
+      }
+
+      const sortedComps = Object.values(macroCompositions).sort((a, b) => b.count - a.count);
+
+      let html = `
+        <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm">
+          <table class="w-full text-left border-collapse" id="macro-compositions-table">
+            <thead>
+              <tr class="bg-slate-100 text-[10px] md:text-sm uppercase text-slate-500 tracking-wide border-b border-slate-200">
+                <th class="p-2 md:p-3 font-semibold">Frequency</th>
+                <th class="p-2 md:p-3 font-semibold text-center">C</th>
+                <th class="p-2 md:p-3 font-semibold text-center">LW</th>
+                <th class="p-2 md:p-3 font-semibold text-center">RW</th>
+                <th class="p-2 md:p-3 font-semibold text-center">D</th>
+                <th class="p-2 md:p-3 font-semibold text-center">G</th>
+              </tr>
+            </thead>
+            <tbody class="text-xs md:text-base text-slate-700">
+      `;
+
+      sortedComps.forEach(c => {
+        const pct = ((c.count / totalCompleteRosters) * 100).toFixed(1);
+        html += `
+          <tr class="border-b hover:bg-slate-50 transition-colors">
+            <td class="p-2 md:p-3 font-bold text-slate-900 text-sm md:text-base">${c.count} <span class="text-slate-500 font-medium text-xs md:text-sm">(${pct}%)</span></td>
+            <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.C}</td>
+            <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.LW}</td>
+            <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.RW}</td>
+            <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.D}</td>
+            <td class="p-2 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${c.G}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
 
     // ==========================================
     // VIEW 1 & 2: PLAYER ADP LOGIC
