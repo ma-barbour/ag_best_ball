@@ -59,7 +59,7 @@
         Draft Trends
       </button>
       <button id="btn-tab-schedule" onclick="switchTab('schedule')" class="flex-1 min-w-[110px] py-2 md:py-3 text-center font-bold text-xs md:text-sm border-b-4 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors">
-        Schedule Matrix
+        Team Builder
       </button>
     </div>
 
@@ -298,18 +298,7 @@
       <!-- VIEW 5: SCHEDULE MATRIX & TEAM BUILDER -->
       <div id="view-schedule" class="hidden p-3 md:p-6">
         
-        <!-- 1. FULL HEATMAP MATRIX -->
-        <div class="mb-8 md:mb-12">
-          <h3 class="text-base md:text-lg font-bold text-slate-800 mb-2 md:mb-4 border-b border-slate-200 pb-1 md:pb-2">Schedule Matrix</h3>
-          <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm max-h-[500px]">
-            <table class="text-center border-collapse text-[10px] md:text-xs" id="schedule-matrix-table">
-              <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 z-20"></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 2. TEAM BUILDER FEATURE -->
+        <!-- 1. TEAM BUILDER FEATURE -->
         <div class="bg-slate-50 border border-slate-200 p-4 md:p-5 rounded-xl shadow-sm mb-8 md:mb-12">
           <h3 class="text-lg md:text-xl font-bold text-slate-900 mb-1">Team Builder</h3>
           <p class="text-xs md:text-sm text-slate-500 mb-4">Find which NHL teams offer the fewest schedule conflicts with a manager's drafted roster at a specific position.</p>
@@ -364,6 +353,17 @@
             <!-- Columns injected by JS -->
           </div>
 
+        </div>
+
+        <!-- 2. FULL HEATMAP MATRIX -->
+        <div class="mb-8 md:mb-12">
+          <h3 class="text-base md:text-lg font-bold text-slate-800 mb-2 md:mb-4 border-b border-slate-200 pb-1 md:pb-2">Schedule Matrix</h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm max-h-[500px]">
+            <table class="text-center border-collapse text-[10px] md:text-xs" id="schedule-matrix-table">
+              <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 z-20"></thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
 
         <!-- 3. TOTAL CONFLICTS RANKING TABLE -->
@@ -806,7 +806,7 @@
         tr.innerHTML = `
           <td class="p-1.5 md:p-3 font-bold text-slate-900 whitespace-nowrap text-sm md:text-lg flex items-center gap-2">
             <img src="${getTeamLogoUrl(p.team)}" class="h-8 w-8 md:h-12 md:w-12 object-contain drop-shadow-sm" onerror="this.style.display='none';"> 
-            ${p.name}
+            <a onclick="navigateToPlayer('${p.id}')" class="cursor-pointer text-green-700 hover:text-green-900 hover:underline transition-colors">${p.name}</a>
           </td>
           <td class="p-1.5 md:p-3 text-center"><span class="px-1.5 py-0.5 md:px-2 md:py-0.5 text-[10px] md:text-xs font-bold rounded-md shadow-sm ${getPosColorClass(p.pos)}">${p.pos}</span></td>
           <td class="p-1.5 md:p-3 font-medium text-slate-700 text-center text-sm md:text-base">${p.count}</td>
@@ -1189,7 +1189,6 @@
       const positions = ['C', 'LW', 'RW', 'D', 'G'];
       
       positions.forEach(pos => {
-        // 1. Determine drafted teams at THIS position for the selected manager and league
         const draftedTeamsAtPos = [];
         Object.values(manager.players).forEach(p => {
           if (p.pos === pos) {
@@ -1220,7 +1219,6 @@
           colHtml += `<div class="text-center text-xs text-slate-400 italic py-4">None left</div>`;
         } else {
           top3.forEach(p => {
-            // 2. Compute conflict score specifically for this player against draftedTeamsAtPos
             let conflictScore = 0;
             const targetTeam = p.team.toUpperCase();
             draftedTeamsAtPos.forEach(dt => {
@@ -1233,7 +1231,9 @@
 
             colHtml += `
               <div class="bg-slate-50 rounded p-2 border border-slate-200 flex flex-col gap-1 items-center justify-center text-center">
-                <div class="font-bold text-slate-900 text-xs w-full truncate" title="${p.name}">${p.name}</div>
+                <div class="font-bold text-slate-900 text-xs w-full truncate" title="${p.name}">
+                  <a onclick="navigateToPlayer('${p.id}')" class="cursor-pointer text-green-700 hover:text-green-900 hover:underline transition-colors">${p.name}</a>
+                </div>
                 <div class="text-[11px] font-semibold text-slate-600">ADP: ${p.overallAdp.toFixed(1)}</div>
                 <div class="flex items-center justify-center gap-1.5 mt-0.5">
                   <img src="${getTeamLogoUrl(p.team)}" class="h-6 w-6 object-contain" onerror="this.style.display='none';">
