@@ -37,11 +37,9 @@
   <div class="max-w-4xl mx-auto bg-white md:rounded-lg md:shadow-lg md:border border-slate-200 overflow-hidden">
     
     <!-- Header Section -->
-    <div class="p-4 md:p-6 border-b-4 border-slate-300 flex flex-col md:flex-row md:items-center justify-between gap-4" style="background-color: #0d1a12;">
-      <div>
-        <h1 class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</h1>
-        <h2 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h2>
-      </div>
+    <div class="bg-green-950 p-4 md:p-6 border-b-4 border-slate-300">
+      <div class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</div>
+      <h1 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h1>
     </div>
 
     <!-- Tab Navigation -->
@@ -1139,7 +1137,6 @@
         });
       }
 
-      const teamConflictMap = {};
       const targetScores = matrixTeams.map(targetTeam => {
         let totalConflict = 0;
         draftedTeams.forEach(dt => {
@@ -1149,7 +1146,6 @@
             totalConflict += (matrixData[targetTeam]?.[dt] || 0);
           }
         });
-        teamConflictMap[targetTeam] = totalConflict;
         return { team: targetTeam, conflictScore: totalConflict };
       });
 
@@ -1172,13 +1168,25 @@
         tbody.appendChild(tr);
       });
 
-      // Target Players (Next Best Available)
+      // Potential Target Players (Next Best Available)
       const targetContainer = document.getElementById("builder-targets-container");
       targetContainer.innerHTML = "";
       
       const positions = ['C', 'LW', 'RW', 'D', 'G'];
       
       positions.forEach(pos => {
+        // 1. Determine drafted teams at THIS position for the selected manager and league
+        const draftedTeamsAtPos = [];
+        Object.values(manager.players).forEach(p => {
+          if (p.pos === pos) {
+            p.pickHistory.forEach(h => {
+              if (h.league === league) {
+                draftedTeamsAtPos.push(p.team.toUpperCase());
+              }
+            });
+          }
+        });
+
         const undraftedAtPos = sortedPlayersArray.filter(p => {
           if (p.pos !== pos) return false;
           return !p.picks.some(pick => pick.league === league);
@@ -1198,7 +1206,17 @@
           colHtml += `<div class="text-center text-xs text-slate-400 italic py-4">None left</div>`;
         } else {
           top3.forEach(p => {
-            const conflictScore = teamConflictMap[p.team.toUpperCase()] || 0;
+            // 2. Compute conflict score specifically for this player against draftedTeamsAtPos
+            let conflictScore = 0;
+            const targetTeam = p.team.toUpperCase();
+            draftedTeamsAtPos.forEach(dt => {
+              if (targetTeam === dt) {
+                 conflictScore += 84;
+              } else {
+                 conflictScore += (matrixData[targetTeam]?.[dt] || 0);
+              }
+            });
+
             colHtml += `
               <div class="bg-slate-50 rounded p-2 border border-slate-200 flex flex-col gap-1 items-center justify-center text-center">
                 <div class="font-bold text-slate-900 text-xs w-full truncate" title="${p.name}">${p.name}</div>
