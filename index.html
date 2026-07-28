@@ -37,9 +37,11 @@
   <div class="max-w-4xl mx-auto bg-white md:rounded-lg md:shadow-lg md:border border-slate-200 overflow-hidden">
     
     <!-- Header Section -->
-    <div class="bg-green-950 p-4 md:p-6 border-b-4 border-slate-300">
-      <div class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</div>
-      <h1 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h1>
+    <div class="p-4 md:p-6 border-b-4 border-slate-300 flex flex-col md:flex-row md:items-center justify-between gap-4" style="background-color: #0d1a12;">
+      <div>
+        <h1 class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</h1>
+        <h2 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h2>
+      </div>
     </div>
 
     <!-- Tab Navigation -->
@@ -341,7 +343,7 @@
 
           <!-- Ranked NHL Teams Table -->
           <h4 class="text-sm md:text-base font-bold text-slate-800 mb-3">Optimal NHL Teams</h4>
-          <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm max-h-[350px] overflow-y-auto">
+          <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-sm max-h-[350px] overflow-y-auto mb-6">
             <table class="w-full text-left border-collapse" id="builder-rankings-table">
               <thead class="sticky top-0 bg-slate-100 border-b border-slate-200 shadow-sm z-10">
                 <tr class="text-[10px] md:text-xs uppercase text-slate-500 tracking-wide">
@@ -353,6 +355,15 @@
               <tbody class="text-xs md:text-sm text-slate-700"></tbody>
             </table>
           </div>
+
+          <!-- Potential Target Players -->
+          <h4 class="text-sm md:text-base font-bold text-slate-800 mb-3 border-t border-slate-200 pt-4">Potential Target Players</h4>
+          <p class="text-[10px] md:text-xs text-slate-500 mb-4">The top 3 undrafted players at each position based on ADP, along with their total schedule conflicts.</p>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="builder-targets-container">
+            <!-- Columns injected by JS -->
+          </div>
+
         </div>
 
         <!-- 3. TOTAL CONFLICTS RANKING TABLE -->
@@ -886,11 +897,11 @@
         data: {
           labels: rounds, 
           datasets: [
-            { label: 'C', data: cData, backgroundColor: getPosHexColor('C'), barPercentage: 0.95, categoryPercentage: 0.95 },
-            { label: 'LW', data: lwData, backgroundColor: getPosHexColor('LW'), barPercentage: 0.95, categoryPercentage: 0.95 },
-            { label: 'RW', data: rwData, backgroundColor: getPosHexColor('RW'), barPercentage: 0.95, categoryPercentage: 0.95 },
-            { label: 'D', data: dData, backgroundColor: getPosHexColor('D'), barPercentage: 0.95, categoryPercentage: 0.95 },
-            { label: 'G', data: gData, backgroundColor: getPosHexColor('G'), barPercentage: 0.95, categoryPercentage: 0.95 }
+            { label: 'C', data: cData, backgroundColor: getPosHexColor('C'), barPercentage: 1.0, categoryPercentage: 0.95 },
+            { label: 'LW', data: lwData, backgroundColor: getPosHexColor('LW'), barPercentage: 1.0, categoryPercentage: 0.95 },
+            { label: 'RW', data: rwData, backgroundColor: getPosHexColor('RW'), barPercentage: 1.0, categoryPercentage: 0.95 },
+            { label: 'D', data: dData, backgroundColor: getPosHexColor('D'), barPercentage: 1.0, categoryPercentage: 0.95 },
+            { label: 'G', data: gData, backgroundColor: getPosHexColor('G'), barPercentage: 1.0, categoryPercentage: 0.95 }
           ]
         },
         options: {
@@ -1128,6 +1139,7 @@
         });
       }
 
+      const teamConflictMap = {};
       const targetScores = matrixTeams.map(targetTeam => {
         let totalConflict = 0;
         draftedTeams.forEach(dt => {
@@ -1137,6 +1149,7 @@
             totalConflict += (matrixData[targetTeam]?.[dt] || 0);
           }
         });
+        teamConflictMap[targetTeam] = totalConflict;
         return { team: targetTeam, conflictScore: totalConflict };
       });
 
@@ -1157,6 +1170,50 @@
           <td class="p-2 font-medium text-slate-700 text-center text-sm md:text-base">${item.conflictScore}</td>
         `;
         tbody.appendChild(tr);
+      });
+
+      // Target Players (Next Best Available)
+      const targetContainer = document.getElementById("builder-targets-container");
+      targetContainer.innerHTML = "";
+      
+      const positions = ['C', 'LW', 'RW', 'D', 'G'];
+      
+      positions.forEach(pos => {
+        const undraftedAtPos = sortedPlayersArray.filter(p => {
+          if (p.pos !== pos) return false;
+          return !p.picks.some(pick => pick.league === league);
+        });
+        
+        const top3 = undraftedAtPos.slice(0, 3);
+        
+        let colHtml = `
+          <div class="border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm flex flex-col h-full">
+            <div class="text-center py-2 text-xs font-bold uppercase tracking-widest ${getPosColorClass(pos)}">
+              ${pos}
+            </div>
+            <div class="p-2 flex-grow flex flex-col gap-2">
+        `;
+        
+        if (top3.length === 0) {
+          colHtml += `<div class="text-center text-xs text-slate-400 italic py-4">None left</div>`;
+        } else {
+          top3.forEach(p => {
+            const conflictScore = teamConflictMap[p.team.toUpperCase()] || 0;
+            colHtml += `
+              <div class="bg-slate-50 rounded p-2 border border-slate-200 flex flex-col gap-1 items-center justify-center text-center">
+                <div class="font-bold text-slate-900 text-xs w-full truncate" title="${p.name}">${p.name}</div>
+                <div class="text-[11px] font-semibold text-slate-600">ADP: ${p.overallAdp.toFixed(1)}</div>
+                <div class="flex items-center justify-center gap-1.5 mt-0.5">
+                  <img src="${getTeamLogoUrl(p.team)}" class="h-6 w-6 object-contain" onerror="this.style.display='none';">
+                  <span class="font-bold text-slate-800 text-sm" title="Schedule Conflicts">${conflictScore}</span>
+                </div>
+              </div>
+            `;
+          });
+        }
+        
+        colHtml += `</div></div>`;
+        targetContainer.innerHTML += colHtml;
       });
     }
   </script>
