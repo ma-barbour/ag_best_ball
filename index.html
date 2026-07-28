@@ -37,9 +37,11 @@
   <div class="max-w-4xl mx-auto bg-white md:rounded-lg md:shadow-lg md:border border-slate-200 overflow-hidden">
     
     <!-- Header Section -->
-    <div class="bg-green-950 p-4 md:p-6 border-b-4 border-slate-300">
-      <div class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</div>
-      <h1 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h1>
+    <div class="p-4 md:p-6 border-b-4 border-slate-300 flex flex-col md:flex-row md:items-center justify-between gap-4" style="background-color: #0d1a12;">
+      <div>
+        <h1 class="uppercase tracking-widest text-white font-extrabold text-lg md:text-2xl mb-1">A&G Best Ball Leagues</h1>
+        <h2 class="text-base md:text-xl font-bold text-slate-300">Data By 18 Skaters</h2>
+      </div>
     </div>
 
     <!-- Tab Navigation -->
@@ -968,9 +970,9 @@
           tr.className = "border-b hover:bg-slate-50 transition-colors";
           tr.innerHTML = `
             <td class="p-2 font-medium text-slate-700 text-center text-sm md:text-base">${index + 1}</td>
-            <td class="p-2 font-bold text-slate-900 text-sm md:text-lg flex items-center gap-2 md:gap-3">
+            <td class="p-2 font-bold text-sm md:text-lg flex items-center gap-2 md:gap-3">
               <img src="${getTeamLogoUrl(p.team)}" class="h-10 w-10 md:h-14 md:w-14 object-contain drop-shadow-sm" onerror="this.style.display='none';"> 
-              <span class="whitespace-nowrap">${p.name}</span>
+              <a onclick="navigateToPlayer('${p.id}')" class="cursor-pointer text-green-700 hover:text-green-900 hover:underline transition-colors whitespace-nowrap">${p.name}</a>
             </td>
             <td class="p-2 font-medium text-center ${scoreColor} text-sm md:text-base">${scoreStr}</td>
           `;
