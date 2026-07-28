@@ -356,9 +356,13 @@
           <h4 class="text-sm md:text-base font-bold text-slate-800 mb-3 border-t border-slate-200 pt-4">Potential Target Players</h4>
           <p class="text-[10px] md:text-xs text-slate-500 mb-4">The top 3 undrafted players at each position based on ADP, along with their total schedule conflicts.</p>
           
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="builder-targets-container">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6" id="builder-targets-container">
             <!-- Columns injected by JS -->
           </div>
+
+          <!-- Roster Streaming Metrics Summary -->
+          <h4 class="text-sm md:text-base font-bold text-slate-800 mb-3 border-t border-slate-200 pt-4">Streaming Metrics For All Skaters</h4>
+          <div id="builder-streaming-metrics" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
 
         </div>
 
@@ -398,9 +402,10 @@
   <script>
     Chart.register(ChartDataLabels);
     
-    // CSV Export URLs
+    // Data Export URLs
     const draftCsvUrl = "https://docs.google.com/spreadsheets/d/1wOBSMgmj3T_5ijNpnr4KacV7b7p189JoYh91FoblzT4/gviz/tq?tqx=out:csv&sheet=clean_draft_results";
     const matrixCsvUrl = "https://docs.google.com/spreadsheets/d/1fWwdzTDoTd4fE4nNgN_wRa-FmrlgDAOMTVC33K1Mp70/gviz/tq?tqx=out:csv";
+    const scheduleJsonUrl = "nhl_schedule.json"; // Expects file saved in same repo/folder
     
     // Global App State
     let chartInstance = null;
@@ -413,10 +418,11 @@
     let sortedManagersArray = [];
     let roundStats = {}; 
 
-    // Schedule Matrix Data
+    // Schedule Data
     let matrixData = {}; 
     let matrixTeams = [];
     let teamTotals = [];
+    let nhlSchedule = {};
 
     // Select Instances
     let tsPlayerSelect = null; 
@@ -499,12 +505,15 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Fetch Draft Data & Schedule Matrix simultaneously
+    // Fetch Draft Data, Schedule Matrix & Full Schedule JSON simultaneously
     Promise.all([
       new Promise(resolve => Papa.parse(draftCsvUrl, { download: true, header: true, dynamicTyping: true, complete: resolve })),
-      new Promise(resolve => Papa.parse(matrixCsvUrl, { download: true, header: false, dynamicTyping: true, complete: resolve })) 
-    ]).then(([draftResults, matrixResults]) => {
+      new Promise(resolve => Papa.parse(matrixCsvUrl, { download: true, header: false, dynamicTyping: true, complete: resolve })),
+      fetch(scheduleJsonUrl).then(res => res.json()).catch(err => { console.warn("Could not load nhl_schedule.json", err); return {}; })
+    ]).then(([draftResults, matrixResults, scheduleResults]) => {
       
+      nhlSchedule = scheduleResults || {};
+
       // 1. Process Draft Results
       draftResults.data.forEach(row => {
         if (!row.player_id || !row.pick_number || !row.round) return;
@@ -1202,6 +1211,100 @@
       updateBuilderRankings();
     }
 
+    function calculateCapturedGames(managerName, league) {
+      if (!nhlSchedule || Object.keys(nhlSchedule).length === 0) return null;
+      const manager = managersData[managerName];
+      if (!manager) return null;
+
+      // Extract all skater players drafted by this manager in this league
+      const rosterSkaters = [];
+      Object.values(manager.players).forEach(p => {
+        if (p.pos !== 'G') {
+          const draftedInLeague = p.pickHistory.some(h => h.league === league);
+          if (draftedInLeague) {
+            rosterSkaters.push(p);
+          }
+        }
+      });
+
+      if (rosterSkaters.length === 0) return null;
+
+      let totalCaptured = 0;
+      let totalBenched = 0;
+
+      Object.keys(nhlSchedule).forEach(dateStr => {
+        const playingTeams = nhlSchedule[dateStr] || [];
+        if (playingTeams.length === 0) return;
+
+        // Skaters playing today
+        const playingSkaters = rosterSkaters.filter(p => playingTeams.includes(p.team.toUpperCase()));
+
+        const cList = playingSkaters.filter(p => p.pos === 'C');
+        const lwList = playingSkaters.filter(p => p.pos === 'LW');
+        const rwList = playingSkaters.filter(p => p.pos === 'RW');
+        const dList = playingSkaters.filter(p => p.pos === 'D');
+
+        const usedC = Math.min(cList.length, 2);
+        const usedLW = Math.min(lwList.length, 2);
+        const usedRW = Math.min(rwList.length, 2);
+        const usedD = Math.min(dList.length, 4);
+
+        const leftover = (cList.length - usedC) + 
+                         (lwList.length - usedLW) + 
+                         (rwList.length - usedRW) + 
+                         (dList.length - usedD);
+
+        const usedFlex = Math.min(leftover, 2);
+        const benched = leftover - usedFlex;
+
+        totalCaptured += (usedC + usedLW + usedRW + usedD + usedFlex);
+        totalBenched += benched;
+      });
+
+      const totalGames = totalCaptured + totalBenched;
+
+      return {
+        captured: totalCaptured,
+        benched: totalBenched,
+        total: totalGames,
+        efficiency: totalGames > 0 ? ((totalCaptured / totalGames) * 100).toFixed(1) : "0.0"
+      };
+    }
+
+    function updateStreamingMetrics(mName, league) {
+      const container = document.getElementById("builder-streaming-metrics");
+      if (!container) return;
+
+      const metrics = calculateCapturedGames(mName, league);
+      if (!metrics) {
+        container.innerHTML = `
+          <div class="col-span-full text-center text-xs text-slate-400 italic bg-white p-3 rounded-lg border border-slate-200">
+            Schedule data loading or no skaters drafted in this league yet.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
+          <div class="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wide">Total Skater Games</div>
+          <div class="text-lg md:text-2xl font-black text-slate-900 mt-0.5">${metrics.total}</div>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
+          <div class="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wide">Captured Games</div>
+          <div class="text-lg md:text-2xl font-black text-blue-600 mt-0.5">${metrics.captured}</div>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
+          <div class="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wide">Bench Games Lost</div>
+          <div class="text-lg md:text-2xl font-black text-red-600 mt-0.5">${metrics.benched}</div>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
+          <div class="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wide">Efficiency</div>
+          <div class="text-lg md:text-2xl font-black text-slate-900 mt-0.5">${metrics.efficiency}%</div>
+        </div>
+      `;
+    }
+
     function updateBuilderRankings() {
       const mName = tsBuilderManagerSelect.getValue();
       const league = Number(document.getElementById("builder-league-select").value);
@@ -1211,6 +1314,9 @@
 
       const manager = managersData[mName];
       if (!manager) return;
+
+      // Update Roster Streaming Metrics Card
+      updateStreamingMetrics(mName, league);
 
       const draftedTeams = [];
       const rosterList = [];
