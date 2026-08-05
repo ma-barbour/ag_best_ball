@@ -1044,11 +1044,11 @@
       // Hot & Cold Logic: 10 most recent leagues, minimum 3 drafts
       const allLgs = new Set();
       sortedPlayersArray.forEach(p => p.picks.forEach(pick => allLgs.add(pick.league)));
-      const top10Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 10);
+      const top12Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 10);
 
       let trendCandidates = [];
       sortedPlayersArray.forEach(p => {
-         const recentPicks = p.picks.filter(pick => top10Leagues.includes(pick.league));
+         const recentPicks = p.picks.filter(pick => top12Leagues.includes(pick.league));
          if (recentPicks.length >= 3) {
             const slope = calculateSlope(recentPicks);
             if (slope !== 0) {
@@ -1390,7 +1390,7 @@
       
       const allLgs = new Set();
       sortedPlayersArray.forEach(p => p.picks.forEach(pick => allLgs.add(pick.league)));
-      const top10Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 10);
+      const top12Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 12);
 
       const positions = ['C', 'LW', 'RW', 'D', 'G'];
       
@@ -1412,7 +1412,7 @@
           const alreadyDrafted = p.picks.some(pick => pick.league === league);
           if (alreadyDrafted) return false;
           
-          const recentPicks = p.picks.filter(pick => top10Leagues.includes(pick.league));
+          const recentPicks = p.picks.filter(pick => top12Leagues.includes(pick.league));
           return recentPicks.length >= 3;
         });
         
