@@ -1388,6 +1388,10 @@
       const targetContainer = document.getElementById("builder-targets-container");
       targetContainer.innerHTML = "";
       
+      const allLgs = new Set();
+      sortedPlayersArray.forEach(p => p.picks.forEach(pick => allLgs.add(pick.league)));
+      const top10Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 10);
+
       const positions = ['C', 'LW', 'RW', 'D', 'G'];
       
       positions.forEach(pos => {
@@ -1404,7 +1408,12 @@
 
         const undraftedAtPos = sortedPlayersArray.filter(p => {
           if (p.pos !== pos) return false;
-          return !p.picks.some(pick => pick.league === league);
+          
+          const alreadyDrafted = p.picks.some(pick => pick.league === league);
+          if (alreadyDrafted) return false;
+          
+          const recentPicks = p.picks.filter(pick => top10Leagues.includes(pick.league));
+          return recentPicks.length >= 3;
         });
         
         const top3 = undraftedAtPos.slice(0, 3);
