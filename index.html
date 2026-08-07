@@ -1390,7 +1390,7 @@
       
       const allLgs = new Set();
       sortedPlayersArray.forEach(p => p.picks.forEach(pick => allLgs.add(pick.league)));
-      const top12Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 12);
+      const top13Leagues = Array.from(allLgs).sort((a,b)=>b-a).slice(0, 13);
 
       const positions = ['C', 'LW', 'RW', 'D', 'G'];
       
@@ -1412,7 +1412,7 @@
           const alreadyDrafted = p.picks.some(pick => pick.league === league);
           if (alreadyDrafted) return false;
           
-          const recentPicks = p.picks.filter(pick => top12Leagues.includes(pick.league));
+          const recentPicks = p.picks.filter(pick => top13Leagues.includes(pick.league));
           return recentPicks.length >= 2;
         });
         
