@@ -1413,7 +1413,7 @@
           if (alreadyDrafted) return false;
           
           const recentPicks = p.picks.filter(pick => top12Leagues.includes(pick.league));
-          return recentPicks.length >= 3;
+          return recentPicks.length >= 2;
         });
         
         const top3 = undraftedAtPos.slice(0, 3);
